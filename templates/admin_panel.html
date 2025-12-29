@@ -1,0 +1,317 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-7xl mx-auto">
+        <!-- Back Button -->
+        <a href="{{ url_for('home') }}" class="flex items-center gap-2 text-gray-600 hover:text-blue-600 transition-colors mb-6 w-fit">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+            Kembali ke Beranda
+        </a>
+
+        <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
+            <!-- Header -->
+            <div class="bg-gradient-to-r from-blue-600 to-indigo-600 p-8">
+                <h1 class="text-3xl font-bold text-white mb-2">Admin Panel</h1>
+                <p class="text-blue-100">Kelola kursus, pesanan, pembayaran, dan pengguna</p>
+            </div>
+
+            <!-- Stats Grid (Clickable Cards) -->
+            <div class="grid md:grid-cols-4 gap-4 p-8 border-b bg-gray-50/50">
+                
+                <!-- Card 1: Total Kursus -> Link ke Tab Courses -->
+                <a href="{{ url_for('admin_panel', tab='courses') }}" class="bg-white border border-blue-100 p-6 rounded-xl block hover:shadow-lg transition-all transform hover:-translate-y-1 cursor-pointer group">
+                    <div class="flex items-center justify-between mb-2">
+                        <div class="text-3xl text-blue-600 font-bold group-hover:scale-110 transition-transform">{{ stats.total_courses }}</div>
+                        <div class="p-3 bg-blue-50 rounded-lg">
+                            <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+                        </div>
+                    </div>
+                    <div class="text-gray-600 font-medium group-hover:text-blue-700">Total Kursus</div>
+                </a>
+
+                <!-- Card 2: Total Pesanan -> Link ke Tab Orders -->
+                <a href="{{ url_for('admin_panel', tab='orders') }}" class="bg-white border border-green-100 p-6 rounded-xl block hover:shadow-lg transition-all transform hover:-translate-y-1 cursor-pointer group">
+                    <div class="flex items-center justify-between mb-2">
+                        <div class="text-3xl text-green-600 font-bold group-hover:scale-110 transition-transform">{{ stats.total_orders }}</div>
+                        <div class="p-3 bg-green-50 rounded-lg">
+                            <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+                        </div>
+                    </div>
+                    <div class="text-gray-600 font-medium group-hover:text-green-700">Total Pesanan</div>
+                </a>
+
+                <!-- Card 3: Menunggu Konfirmasi -> Link ke Tab Payments -->
+                <a href="{{ url_for('admin_panel', tab='payments') }}" class="bg-white border border-yellow-100 p-6 rounded-xl block hover:shadow-lg transition-all transform hover:-translate-y-1 cursor-pointer group">
+                    <div class="flex items-center justify-between mb-2">
+                        <div class="text-3xl text-yellow-600 font-bold group-hover:scale-110 transition-transform">{{ stats.pending_orders }}</div>
+                        <div class="p-3 bg-yellow-50 rounded-lg">
+                            <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        </div>
+                    </div>
+                    <div class="text-gray-600 font-medium group-hover:text-yellow-700">Menunggu Konfirmasi</div>
+                </a>
+
+                <!-- Card 4: Total Pengguna -> Link ke Tab Users -->
+                <a href="{{ url_for('admin_panel', tab='users') }}" class="bg-white border border-purple-100 p-6 rounded-xl block hover:shadow-lg transition-all transform hover:-translate-y-1 cursor-pointer group">
+                    <div class="flex items-center justify-between mb-2">
+                        <div class="text-3xl text-purple-600 font-bold group-hover:scale-110 transition-transform">{{ stats.total_users }}</div>
+                        <div class="p-3 bg-purple-50 rounded-lg">
+                            <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+                        </div>
+                    </div>
+                    <div class="text-gray-600 font-medium group-hover:text-purple-700">Total Pengguna</div>
+                </a>
+            </div>
+
+            <!-- Tabs Navigation -->
+            <div class="border-b overflow-x-auto">
+                <div class="flex min-w-max">
+                    <a href="{{ url_for('admin_panel', tab='courses') }}" 
+                       class="px-6 py-4 whitespace-nowrap transition-colors flex items-center gap-2 font-medium {{ 'border-b-2 border-blue-600 text-blue-600 bg-blue-50/50' if active_tab == 'courses' else 'text-gray-600 hover:text-gray-900 hover:bg-gray-50' }}">
+                        <span>📚</span> Kelola Kursus
+                    </a>
+                    <a href="{{ url_for('admin_panel', tab='orders') }}" 
+                       class="px-6 py-4 whitespace-nowrap transition-colors flex items-center gap-2 font-medium {{ 'border-b-2 border-blue-600 text-blue-600 bg-blue-50/50' if active_tab == 'orders' else 'text-gray-600 hover:text-gray-900 hover:bg-gray-50' }}">
+                        <span>📦</span> Kelola Pesanan
+                    </a>
+                    <a href="{{ url_for('admin_panel', tab='payments') }}" 
+                       class="px-6 py-4 whitespace-nowrap transition-colors flex items-center gap-2 font-medium {{ 'border-b-2 border-blue-600 text-blue-600 bg-blue-50/50' if active_tab == 'payments' else 'text-gray-600 hover:text-gray-900 hover:bg-gray-50' }}">
+                        <span>💰</span> Konfirmasi Pembayaran
+                        {% if stats.pending_orders > 0 %}
+                        <span class="ml-2 bg-yellow-500 text-white text-xs px-2 py-0.5 rounded-full font-bold">{{ stats.pending_orders }}</span>
+                        {% endif %}
+                    </a>
+                    <a href="{{ url_for('admin_panel', tab='users') }}" 
+                       class="px-6 py-4 whitespace-nowrap transition-colors flex items-center gap-2 font-medium {{ 'border-b-2 border-blue-600 text-blue-600 bg-blue-50/50' if active_tab == 'users' else 'text-gray-600 hover:text-gray-900 hover:bg-gray-50' }}">
+                        <span>👥</span> Kelola Pengguna
+                    </a>
+                </div>
+            </div>
+
+            <!-- Content Area -->
+            <div class="p-8">
+                
+                <!-- TAB: COURSES -->
+                {% if active_tab == 'courses' %}
+                <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
+                    <h2 class="text-2xl font-bold text-gray-900">Manajemen Kursus</h2>
+                    <a href="{{ url_for('save_course') }}" class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center gap-2 font-medium shadow-md hover:shadow-lg">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                        Tambah Kursus Baru
+                    </a>
+                </div>
+
+                <!-- Filter -->
+                <div class="flex flex-wrap gap-2 mb-6">
+                    {% for cat in ['all', 'IT', 'Office', 'Digitalisasi'] %}
+                    <a href="{{ url_for('admin_panel', tab='courses', filter=cat) }}" 
+                       class="px-4 py-2 rounded-lg transition-colors font-medium border {{ 'bg-blue-600 text-white border-blue-600 shadow-md' if filter_category == cat else 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50' }}">
+                        {{ cat|capitalize }}
+                    </a>
+                    {% endfor %}
+                </div>
+
+                <div class="overflow-x-auto rounded-lg border border-gray-200">
+                    <table class="w-full">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Kursus</th>
+                                <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Kategori</th>
+                                <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Harga</th>
+                                <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Siswa</th>
+                                <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            {% for course in courses %}
+                            <tr class="hover:bg-gray-50 transition-colors">
+                                <td class="px-6 py-4">
+                                    <div class="flex items-center gap-4">
+                                        <img src="{{ course.image }}" class="w-16 h-12 object-cover rounded-md shadow-sm" onerror="this.src='https://via.placeholder.com/150?text=No+Img'">
+                                        <div>
+                                            <div class="text-sm font-bold text-gray-900">{{ course.title }}</div>
+                                            <div class="text-xs text-gray-500">{{ course.instructor }}</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                        {{ course.category }}
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 text-sm text-gray-900 font-medium">
+                                    Rp {{ "{:,.0f}".format(course.price) }}
+                                </td>
+                                <td class="px-6 py-4 text-sm text-gray-500">
+                                    {{ course.students }}
+                                </td>
+                                <td class="px-6 py-4 text-sm font-medium">
+                                    <div class="flex items-center gap-3">
+                                        <a href="{{ url_for('save_course', course_id=course.id) }}" class="text-blue-600 hover:text-blue-900 p-1 hover:bg-blue-50 rounded transition-colors" title="Edit">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                                        </a>
+                                        <form action="{{ url_for('delete_course', course_id=course.id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus kursus ini? Data tidak bisa dikembalikan.')" class="inline">
+                                            <button type="submit" class="text-red-600 hover:text-red-900 p-1 hover:bg-red-50 rounded transition-colors" title="Hapus">
+                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="5" class="px-6 py-12 text-center text-gray-500">
+                                    Belum ada kursus yang tersedia.
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- TAB: ORDERS -->
+                {% elif active_tab == 'orders' %}
+                <h2 class="text-2xl font-bold text-gray-900 mb-6">Manajemen Pesanan</h2>
+                <div class="space-y-4">
+                    {% for order in orders %}
+                    <div class="border border-gray-200 rounded-xl p-6 hover:shadow-md transition-shadow bg-white">
+                        <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-4 mb-4">
+                            <div>
+                                <div class="flex items-center gap-3 mb-2">
+                                    <h3 class="text-lg font-bold text-gray-900">Order #{{ order.id }}</h3>
+                                    <span class="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide
+                                        {{ 'bg-yellow-100 text-yellow-800' if order.status == 'pending' else 
+                                           'bg-green-100 text-green-800' if order.status == 'confirmed' else 
+                                           'bg-red-100 text-red-800' }}">
+                                        {{ order.status }}
+                                    </span>
+                                </div>
+                                <p class="text-gray-600 font-medium">{{ order.user.username }} <span class="text-gray-400 font-normal">• {{ order.user.email }}</span></p>
+                                <p class="text-sm text-gray-500 mt-1">{{ order.created_at.strftime('%d %B %Y, %H:%M') }}</p>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-2xl font-bold text-gray-900 mb-1">Rp {{ "{:,.0f}".format(order.total) }}</div>
+                                <div class="text-sm text-gray-600 bg-gray-100 px-2 py-1 rounded inline-block">{{ order.payment_method }}</div>
+                            </div>
+                        </div>
+                        <div class="border-t border-gray-100 pt-4">
+                            <p class="text-sm font-bold text-gray-700 mb-2">Item Pembelian:</p>
+                            <ul class="space-y-1">
+                                {% for item in order.items %}
+                                <li class="text-gray-600 text-sm flex items-center gap-2">
+                                    <svg class="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                                    {{ item.course_title }}
+                                </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                    {% else %}
+                    <div class="text-center py-12 bg-white rounded-xl border border-gray-200">
+                        <p class="text-gray-500">Belum ada riwayat pesanan.</p>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <!-- TAB: PAYMENTS -->
+                {% elif active_tab == 'payments' %}
+                <h2 class="text-2xl font-bold text-gray-900 mb-6">Konfirmasi Pembayaran</h2>
+                <div class="space-y-6">
+                    {% set pending_found = false %}
+                    {% for order in orders if order.status == 'pending' %}
+                    {% set pending_found = true %}
+                    <div class="border-2 border-yellow-100 bg-yellow-50/50 rounded-xl p-6 shadow-sm">
+                        <div class="flex flex-col md:flex-row justify-between mb-6 gap-4">
+                            <div>
+                                <h3 class="text-lg font-bold text-gray-900 mb-2 flex items-center gap-2">
+                                    Order #{{ order.id }}
+                                    <span class="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded-full">Menunggu</span>
+                                </h3>
+                                <div class="space-y-1 text-sm text-gray-700">
+                                    <p><span class="font-medium">Pembeli:</span> {{ order.user.username }} ({{ order.user.email }})</p>
+                                    <p><span class="font-medium">Metode:</span> {{ order.payment_method }}</p>
+                                    <p><span class="font-medium">Tanggal:</span> {{ order.created_at.strftime('%d/%m/%Y %H:%M') }}</p>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-sm text-gray-500 mb-1">Total Tagihan</p>
+                                <p class="text-3xl font-bold text-gray-900">Rp {{ "{:,.0f}".format(order.total) }}</p>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-white p-4 rounded-lg border border-yellow-100 mb-6">
+                            <p class="text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">Detail Item</p>
+                            {% for item in order.items %}
+                            <div class="text-sm text-gray-800 py-1 border-b border-gray-50 last:border-0">
+                                {{ item.course_title }}
+                            </div>
+                            {% endfor %}
+                        </div>
+
+                        <div class="flex gap-3">
+                            <form action="{{ url_for('update_order_status', order_id=order.id, action='confirm') }}" method="POST" class="flex-1">
+                                <button class="w-full bg-green-600 text-white py-3 rounded-lg hover:bg-green-700 font-bold shadow-sm hover:shadow transition-all flex items-center justify-center gap-2">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                                    Konfirmasi Pembayaran
+                                </button>
+                            </form>
+                            <form action="{{ url_for('update_order_status', order_id=order.id, action='cancel') }}" method="POST" class="flex-1" onsubmit="return confirm('Yakin ingin menolak pesanan ini?')">
+                                <button class="w-full bg-white border border-red-200 text-red-600 py-3 rounded-lg hover:bg-red-50 font-bold transition-all flex items-center justify-center gap-2">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                                    Tolak / Batalkan
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                    {% endfor %}
+                    
+                    {% if not pending_found %}
+                    <div class="text-center py-16 bg-white rounded-xl border border-gray-200">
+                        <div class="bg-green-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                        </div>
+                        <h3 class="text-lg font-bold text-gray-900">Semua Beres!</h3>
+                        <p class="text-gray-500">Tidak ada pembayaran yang menunggu konfirmasi saat ini.</p>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- TAB: USERS -->
+                {% elif active_tab == 'users' %}
+                <h2 class="text-2xl font-bold text-gray-900 mb-6">Manajemen Pengguna</h2>
+                <div class="overflow-x-auto rounded-lg border border-gray-200">
+                    <table class="w-full">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Nama</th>
+                                <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Email</th>
+                                <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Role</th>
+                                <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Sekolah</th>
+                                <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Terdaftar</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            {% for user in users %}
+                            <tr class="hover:bg-gray-50 transition-colors">
+                                <td class="px-6 py-4 font-medium text-gray-900">{{ user.username }}</td>
+                                <td class="px-6 py-4 text-gray-600">{{ user.email }}</td>
+                                <td class="px-6 py-4">
+                                    <span class="px-2.5 py-0.5 rounded-full text-xs font-medium {{ 'bg-purple-100 text-purple-800' if user.is_admin else 'bg-blue-100 text-blue-800' }}">
+                                        {{ 'Admin' if user.is_admin else 'Siswa' }}
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 text-gray-600">{{ user.school or '-' }}</td>
+                                <td class="px-6 py-4 text-gray-500 text-sm">{{ user.created_at.strftime('%d/%m/%Y') }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% endif %}
+
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

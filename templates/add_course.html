@@ -1,0 +1,360 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-4xl mx-auto">
+        <a href="{{ url_for('admin_panel') }}" class="flex items-center gap-2 text-gray-600 hover:text-blue-600 transition-colors mb-6">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+            Kembali ke Dashboard
+        </a>
+
+        <div class="bg-white rounded-2xl shadow-lg p-8">
+            <h1 class="text-3xl font-bold text-gray-900 mb-8">
+                {{ 'Edit Kursus' if course else 'Tambah Kursus Baru' }}
+            </h1>
+
+            <form method="POST" id="courseForm" class="space-y-6">
+                <!-- INFORMASI DASAR (Sama seperti sebelumnya) -->
+                <div class="space-y-4">
+                    <h2 class="text-xl font-bold text-gray-900">Informasi Dasar</h2>
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Judul Kursus *</label>
+                            <input type="text" name="title" value="{{ course.title if course else '' }}" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Instruktur *</label>
+                            <input type="text" name="instructor" value="{{ course.instructor if course else '' }}" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 outline-none">
+                        </div>
+                    </div>
+                    <div class="grid md:grid-cols-3 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Kategori *</label>
+                            <select name="category" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 outline-none">
+                                <option value="IT" {% if course and course.category == 'IT' %}selected{% endif %}>IT</option>
+                                <option value="Office" {% if course and course.category == 'Office' %}selected{% endif %}>Office</option>
+                                <option value="Digitalisasi" {% if course and course.category == 'Digitalisasi' %}selected{% endif %}>Digitalisasi</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Level *</label>
+                            <select name="level" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 outline-none">
+                                <option value="Pemula" {% if course and course.level == 'Pemula' %}selected{% endif %}>Pemula</option>
+                                <option value="Menengah" {% if course and course.level == 'Menengah' %}selected{% endif %}>Menengah</option>
+                                <option value="Lanjutan" {% if course and course.level == 'Lanjutan' %}selected{% endif %}>Lanjutan</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Durasi Total *</label>
+                            <input type="text" name="duration" value="{{ course.duration if course else '' }}" placeholder="Contoh: 8 Minggu" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 outline-none">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Deskripsi *</label>
+                        <textarea name="description" rows="3" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 outline-none">{{ course.description if course else '' }}</textarea>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">URL Gambar Sampul</label>
+                        <input type="url" name="image" value="{{ course.image if course else '' }}" placeholder="https://example.com/image.jpg" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 outline-none">
+                    </div>
+                </div>
+
+                <!-- HARGA (Sama seperti sebelumnya) -->
+                <div class="space-y-4 border-t pt-6">
+                    <h2 class="text-xl font-bold text-gray-900">Harga & Diskon</h2>
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Harga (Rp) *</label>
+                            <input type="number" name="price" value="{{ course.price if course else 0 }}" min="0" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Diskon (%) *</label>
+                            <input type="number" name="discount" value="{{ course.discount if course else 0 }}" min="0" max="100" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 outline-none">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PELAJARAN (BAGIAN UTAMA YANG DIUBAH) -->
+                <div class="space-y-4 border-t pt-6">
+                    <h2 class="text-xl font-bold text-gray-900">Materi Pelajaran</h2>
+                    <input type="hidden" name="lessons_json" id="lessonsJson">
+
+                    <!-- Form Tambah Pelajaran -->
+                    <div class="bg-gray-50 p-6 rounded-xl border border-gray-200 space-y-4">
+                        <h3 class="font-bold text-gray-800">Tambah Pelajaran Baru</h3>
+                        
+                        <!-- Baris 1: Judul, Durasi, Tipe -->
+                        <div class="grid md:grid-cols-3 gap-4">
+                            <input type="text" id="newLessonTitle" placeholder="Judul pelajaran" class="px-4 py-2 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-blue-600">
+                            <input type="text" id="newLessonDuration" placeholder="Durasi (cth: 15 menit)" class="px-4 py-2 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-blue-600">
+                            <select id="newLessonType" onchange="toggleContentInput()" class="px-4 py-2 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-blue-600">
+                                <option value="video">Video</option>
+                                <option value="text">Teks Bacaan</option>
+                                <option value="quiz">Kuis / Soal</option>
+                            </select>
+                        </div>
+
+                        <!-- AREA KONTEN DINAMIS -->
+                        <div id="contentArea" class="bg-white p-4 rounded-lg border border-gray-200">
+                            
+                            <!-- 1. Input VIDEO -->
+                            <div id="inputVideo" class="block">
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Link Video / Embed URL</label>
+                                <input type="url" id="videoUrl" placeholder="https://youtube.com/embed/..." class="w-full px-4 py-2 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-blue-600">
+                                <p class="text-xs text-gray-500 mt-1">Masukkan link langsung atau link embed video.</p>
+                            </div>
+
+                            <!-- 2. Input TEKS -->
+                            <div id="inputText" class="hidden">
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Isi Materi Teks</label>
+                                <textarea id="textContent" rows="6" class="w-full px-4 py-2 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-blue-600" placeholder="Tulis materi pelajaran di sini..."></textarea>
+                            </div>
+
+                            <!-- 3. Input QUIZ BUILDER -->
+                            <div id="inputQuiz" class="hidden space-y-4">
+                                <div class="flex justify-between items-center">
+                                    <label class="block text-sm font-medium text-gray-700">Buat Soal Kuis</label>
+                                    <button type="button" onclick="addQuizQuestion()" class="text-sm bg-blue-100 text-blue-700 px-3 py-1 rounded hover:bg-blue-200">
+                                        + Tambah Soal
+                                    </button>
+                                </div>
+                                
+                                <!-- Container Soal -->
+                                <div id="quizQuestionsContainer" class="space-y-4">
+                                    <!-- Soal akan ditambahkan di sini via JS -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center justify-between">
+                            <label class="flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
+                                <input type="checkbox" id="newLessonPreview" class="rounded text-blue-600 focus:ring-blue-500"> 
+                                Preview Gratis (Bisa diakses tanpa beli)
+                            </label>
+                            
+                            <button type="button" onclick="addLesson()" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2 font-medium">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/></svg>
+                                Simpan Pelajaran
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- List Lessons -->
+                    <div id="lessonsList" class="space-y-3">
+                        <!-- Daftar pelajaran yang sudah ditambahkan akan muncul di sini -->
+                    </div>
+                </div>
+
+                <!-- Submit Buttons -->
+                <div class="flex gap-4 pt-6 border-t">
+                    <a href="{{ url_for('admin_panel') }}" class="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-center font-medium">
+                        Batal
+                    </a>
+                    <button type="submit" class="flex-1 bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center gap-2 font-bold shadow-lg">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"/></svg>
+                        Simpan Kursus
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    // --- STATE MANAGEMENT ---
+    let lessons = {{ lessons_json | safe }};
+    let tempQuizQuestions = []; // Menyimpan soal kuis sementara saat membuat pelajaran
+
+    // --- UI LOGIC ---
+
+    // 1. Toggle Tampilan Input Berdasarkan Dropdown
+    function toggleContentInput() {
+        const type = document.getElementById('newLessonType').value;
+        
+        document.getElementById('inputVideo').classList.add('hidden');
+        document.getElementById('inputText').classList.add('hidden');
+        document.getElementById('inputQuiz').classList.add('hidden');
+
+        if (type === 'video') {
+            document.getElementById('inputVideo').classList.remove('hidden');
+        } else if (type === 'text') {
+            document.getElementById('inputText').classList.remove('hidden');
+        } else if (type === 'quiz') {
+            document.getElementById('inputQuiz').classList.remove('hidden');
+            // Reset quiz builder jika baru dibuka
+            if(tempQuizQuestions.length === 0) addQuizQuestion(); 
+        }
+    }
+
+    // 2. Quiz Builder Logic
+    function addQuizQuestion() {
+        const qId = Date.now();
+        const html = `
+            <div id="q-${qId}" class="bg-gray-50 p-4 rounded border border-gray-300 relative">
+                <button type="button" onclick="removeQuestion('${qId}')" class="absolute top-2 right-2 text-red-500 hover:text-red-700">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+                <div class="mb-2">
+                    <input type="text" class="q-text w-full px-3 py-2 border rounded mb-2" placeholder="Pertanyaan...">
+                    <select class="q-type w-full px-3 py-2 border rounded" onchange="toggleOptionInput('${qId}', this.value)">
+                        <option value="multiple_choice">Pilihan Ganda</option>
+                        <option value="essay">Essay / Isian</option>
+                    </select>
+                </div>
+                <div id="opts-${qId}" class="space-y-2 pl-4 border-l-2 border-blue-200">
+                    <!-- Options Container -->
+                    <div class="options-list space-y-2"></div>
+                    <button type="button" onclick="addOption('${qId}')" class="text-xs text-blue-600 hover:underline">+ Tambah Opsi Jawaban</button>
+                </div>
+            </div>
+        `;
+        document.getElementById('quizQuestionsContainer').insertAdjacentHTML('beforeend', html);
+        // Tambah 2 opsi default untuk PG
+        addOption(qId);
+        addOption(qId);
+    }
+
+    function removeQuestion(id) {
+        document.getElementById(`q-${id}`).remove();
+    }
+
+    function toggleOptionInput(qId, type) {
+        const optsContainer = document.getElementById(`opts-${qId}`);
+        if (type === 'essay') {
+            optsContainer.classList.add('hidden');
+        } else {
+            optsContainer.classList.remove('hidden');
+        }
+    }
+
+    function addOption(qId) {
+        const optsList = document.querySelector(`#opts-${qId} .options-list`);
+        const optHtml = `
+            <div class="flex items-center gap-2">
+                <input type="radio" name="correct-${qId}" class="opt-correct" title="Tandai sebagai jawaban benar">
+                <input type="text" class="opt-text w-full px-2 py-1 border rounded text-sm" placeholder="Opsi jawaban...">
+                <button type="button" onclick="this.parentElement.remove()" class="text-red-400 hover:text-red-600">x</button>
+            </div>
+        `;
+        optsList.insertAdjacentHTML('beforeend', optHtml);
+    }
+
+    // 3. Add Lesson Logic (Mengumpulkan Data)
+    function addLesson() {
+        const title = document.getElementById('newLessonTitle').value;
+        const duration = document.getElementById('newLessonDuration').value;
+        const type = document.getElementById('newLessonType').value;
+        const isPreview = document.getElementById('newLessonPreview').checked;
+        
+        let content = '';
+
+        if (!title || !duration) {
+            alert('Mohon isi judul dan durasi pelajaran.');
+            return;
+        }
+
+        // Ambil konten berdasarkan tipe
+        if (type === 'video') {
+            content = document.getElementById('videoUrl').value;
+            if (!content) { alert('Link video wajib diisi'); return; }
+        } else if (type === 'text') {
+            content = document.getElementById('textContent').value;
+            if (!content) { alert('Isi materi teks wajib diisi'); return; }
+        } else if (type === 'quiz') {
+            // Collect Quiz Data
+            const questions = [];
+            document.querySelectorAll('#quizQuestionsContainer > div').forEach(qDiv => {
+                const qText = qDiv.querySelector('.q-text').value;
+                const qType = qDiv.querySelector('.q-type').value;
+                
+                if (qText) {
+                    let qData = { question: qText, type: qType };
+                    if (qType === 'multiple_choice') {
+                        const options = [];
+                        let correctIndex = -1;
+                        qDiv.querySelectorAll('.options-list > div').forEach((optDiv, idx) => {
+                            const optText = optDiv.querySelector('.opt-text').value;
+                            const isCorrect = optDiv.querySelector('.opt-correct').checked;
+                            if (optText) {
+                                options.push(optText);
+                                if (isCorrect) correctIndex = idx;
+                            }
+                        });
+                        qData.options = options;
+                        qData.correctIndex = correctIndex;
+                    }
+                    questions.push(qData);
+                }
+            });
+            
+            if (questions.length === 0) { alert('Minimal buat 1 pertanyaan kuis'); return; }
+            content = questions; // Simpan sebagai object array, nanti di-stringify saat submit form utama
+        }
+
+        // Tambahkan ke array lessons
+        lessons.push({
+            title,
+            duration,
+            type,
+            isPreview,
+            content
+        });
+
+        // Reset Form
+        document.getElementById('newLessonTitle').value = '';
+        document.getElementById('newLessonDuration').value = '';
+        document.getElementById('videoUrl').value = '';
+        document.getElementById('textContent').value = '';
+        document.getElementById('quizQuestionsContainer').innerHTML = '';
+        document.getElementById('newLessonPreview').checked = false;
+        tempQuizQuestions = [];
+
+        renderLessons();
+    }
+
+    function removeLesson(index) {
+        lessons.splice(index, 1);
+        renderLessons();
+    }
+
+    function renderLessons() {
+        const container = document.getElementById('lessonsList');
+        container.innerHTML = '';
+
+        lessons.forEach((l, idx) => {
+            let contentPreview = '';
+            if (l.type === 'video') contentPreview = `<span class="text-xs text-gray-500 truncate block max-w-xs">Link: ${l.content}</span>`;
+            else if (l.type === 'text') contentPreview = `<span class="text-xs text-gray-500 truncate block max-w-xs">Teks: ${l.content.substring(0, 30)}...</span>`;
+            else if (l.type === 'quiz') contentPreview = `<span class="text-xs text-gray-500">${l.content.length} Pertanyaan</span>`;
+
+            const html = `
+                <div class="flex items-center justify-between p-4 bg-white border border-gray-200 rounded-lg shadow-sm">
+                    <div class="flex items-center gap-4">
+                        <div class="bg-blue-100 p-2 rounded text-blue-600 font-bold uppercase text-xs w-12 text-center">
+                            ${l.type}
+                        </div>
+                        <div>
+                            <div class="font-bold text-gray-800">${idx + 1}. ${l.title}</div>
+                            <div class="text-sm text-gray-500">${l.duration} ${l.isPreview ? '• <span class="text-green-600">Preview</span>' : ''}</div>
+                            ${contentPreview}
+                        </div>
+                    </div>
+                    <button type="button" onclick="removeLesson(${idx})" class="text-red-500 hover:text-red-700 p-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                    </button>
+                </div>
+            `;
+            container.insertAdjacentHTML('beforeend', html);
+        });
+    }
+
+    // Handle Submit Form Utama
+    document.getElementById('courseForm').addEventListener('submit', function(e) {
+        document.getElementById('lessonsJson').value = JSON.stringify(lessons);
+    });
+
+    // Initial Render (jika edit mode)
+    renderLessons();
+    toggleContentInput(); // Set initial state
+</script>
+{% endblock %}

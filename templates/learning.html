@@ -1,0 +1,271 @@
+{% extends "base.html" %}
+
+{% block content %}
+<!-- Sembunyikan Navbar & Footer Default agar fokus belajar -->
+<style>
+    nav, footer { display: none !important; }
+</style>
+
+<div class="min-h-screen bg-gray-900 text-white flex flex-col">
+    <!-- Header Learning -->
+    <div class="bg-gray-800 border-b border-gray-700 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+            <div class="flex items-center justify-between">
+                <a href="{{ url_for('my_courses') }}" class="flex items-center gap-2 text-gray-300 hover:text-white transition-colors">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+                    Kembali ke Kursus
+                </a>
+
+                <div class="flex items-center gap-4">
+                    <div class="text-sm text-gray-400">
+                        Progress: <span class="text-white" id="progressText">{{ progress_percent }}%</span>
+                    </div>
+                    <div class="w-32 h-2 bg-gray-700 rounded-full overflow-hidden">
+                        <div id="progressBar" class="h-full bg-gradient-to-r from-green-400 to-emerald-500 transition-all duration-500" style="width: {{ progress_percent }}%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="flex-grow max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-6">
+        <div class="grid lg:grid-cols-3 gap-6 h-full">
+            
+            <!-- Main Content Area -->
+            <div class="lg:col-span-2 space-y-6">
+                <!-- Video Player Placeholder -->
+                <div class="bg-black rounded-xl overflow-hidden shadow-2xl aspect-video relative group">
+                    <div class="absolute inset-0 bg-gradient-to-br from-gray-800 to-gray-900 flex items-center justify-center">
+                        <div class="text-center">
+                            <div class="bg-blue-600 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4 cursor-pointer hover:bg-blue-700 transition-all hover:scale-110 group-hover:scale-110">
+                                <svg class="w-10 h-10 text-white ml-1" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                            </div>
+                            <p class="text-gray-400" id="videoTitle">Video Player</p>
+                            <p class="text-sm text-gray-500 mt-2" id="videoDuration">--:--</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Lesson Info & Controls -->
+                <div class="bg-gray-800 rounded-xl p-6 shadow-xl">
+                    <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-4">
+                        <div class="flex-1">
+                            <h2 class="text-2xl font-bold mb-2" id="lessonTitle">Pilih Pelajaran</h2>
+                            <div class="flex items-center gap-4 text-sm text-gray-400">
+                                <span id="lessonIndex">Pelajaran -</span>
+                                <span>•</span>
+                                <span id="lessonDuration">-- menit</span>
+                            </div>
+                        </div>
+                        
+                        <!-- Tombol Mark Complete -->
+                        <button id="btnMarkComplete" onclick="markComplete()" class="hidden bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-colors flex items-center gap-2">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            Tandai Selesai
+                        </button>
+                        
+                        <div id="badgeCompleted" class="hidden bg-green-600/20 text-green-400 px-6 py-3 rounded-lg flex items-center gap-2 border border-green-600/30">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                            Selesai
+                        </div>
+                    </div>
+
+                    <!-- Navigation Buttons -->
+                    <div class="flex gap-3 pt-4 border-t border-gray-700">
+                        <button onclick="prevLesson()" id="btnPrev" disabled class="flex-1 border border-gray-600 text-gray-300 py-3 rounded-lg hover:bg-gray-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                            ← Sebelumnya
+                        </button>
+                        <button onclick="nextLesson()" id="btnNext" disabled class="flex-1 bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                            Berikutnya →
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Course Description -->
+                <div class="bg-gray-800 rounded-xl p-6 shadow-xl">
+                    <h3 class="text-xl font-bold mb-4">Tentang Kursus Ini</h3>
+                    <p class="text-gray-300 leading-relaxed">{{ course.description }}</p>
+                    <div class="mt-6 pt-6 border-t border-gray-700 flex items-center gap-4 text-gray-400">
+                        <span>{{ course.lessons|length }} Pelajaran</span>
+                        <span>•</span>
+                        <span>Instruktur: {{ course.instructor }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sidebar Content -->
+            <div class="lg:col-span-1">
+                <div class="bg-gray-800 rounded-xl shadow-xl overflow-hidden sticky top-24">
+                    <div class="p-6 bg-gradient-to-r from-blue-600 to-indigo-600">
+                        <h3 class="text-xl font-bold text-white mb-1">Konten Kursus</h3>
+                        <p class="text-blue-100 text-sm">{{ course.lessons|length }} pelajaran</p>
+                    </div>
+
+                    <div class="max-h-[600px] overflow-y-auto" id="lessonList">
+                        {% for lesson in course.lessons %}
+                        <button 
+                            onclick="loadLesson({{ loop.index0 }}, {{ lesson.id }}, '{{ lesson.title }}', '{{ lesson.duration }}')"
+                            id="lesson-btn-{{ loop.index0 }}"
+                            class="w-full p-4 text-left border-b border-gray-700 hover:bg-gray-700 transition-colors flex items-start gap-3 group focus:outline-none"
+                        >
+                            <!-- Icon Status -->
+                            <div class="mt-1" id="icon-status-{{ lesson.id }}">
+                                {% if lesson.id in completed_lesson_ids %}
+                                <svg class="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                {% else %}
+                                <svg class="w-5 h-5 text-gray-500 group-hover:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="flex-1">
+                                <div class="mb-1 font-medium text-gray-300 group-hover:text-white transition-colors" id="title-text-{{ loop.index0 }}">
+                                    {{ loop.index }}. {{ lesson.title }}
+                                </div>
+                                <div class="text-sm text-gray-500">{{ lesson.duration }}</div>
+                            </div>
+                        </button>
+                        {% endfor %}
+                    </div>
+
+                    <!-- Certificate Button (Hidden by default) -->
+                    <div id="certButtonArea" class="p-6 bg-gradient-to-r from-yellow-500 to-orange-500 {{ 'hidden' if progress_percent < 100 }}">
+                        <a href="{{ url_for('view_certificate', course_id=course.id) }}" class="w-full bg-white text-orange-600 py-3 rounded-lg hover:bg-gray-100 transition-colors flex items-center justify-center gap-2 font-bold">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/></svg>
+                            Lihat Sertifikat
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Certificate Popup -->
+    <div id="certPopup" class="fixed inset-0 bg-black/80 hidden items-center justify-center z-50 p-4 backdrop-blur-sm">
+        <div class="bg-white rounded-2xl p-8 max-w-md w-full text-center transform transition-all scale-100">
+            <div class="bg-gradient-to-br from-yellow-400 to-orange-500 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
+                <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/></svg>
+            </div>
+            <h2 class="text-3xl font-bold text-gray-900 mb-4">Selamat! 🎉</h2>
+            <p class="text-gray-600 mb-6">Anda telah menyelesaikan seluruh pelajaran dalam kursus <strong>{{ course.title }}</strong></p>
+            <div class="space-y-3">
+                <a href="{{ url_for('view_certificate', course_id=course.id) }}" class="block w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-3 rounded-lg hover:from-blue-700 hover:to-indigo-700 transition-all font-bold shadow-lg">
+                    Lihat Sertifikat
+                </a>
+                <button onclick="document.getElementById('certPopup').classList.replace('flex', 'hidden')" class="w-full border border-gray-300 text-gray-700 py-3 rounded-lg hover:bg-gray-50 transition-colors">
+                    Nanti Saja
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Data dari Server
+    const lessons = [
+        {% for lesson in course.lessons %}
+        { id: {{ lesson.id }}, title: "{{ lesson.title }}", duration: "{{ lesson.duration }}" },
+        {% endfor %}
+    ];
+    let completedIds = {{ completed_lesson_ids | tojson }};
+    let currentIndex = 0;
+    const courseId = {{ course.id }};
+
+    // Fungsi Load Lesson
+    function loadLesson(index, id, title, duration) {
+        currentIndex = index;
+        const currentLesson = lessons[index];
+        
+        // Update UI
+        document.getElementById('lessonTitle').innerText = currentLesson.title;
+        document.getElementById('videoTitle').innerText = "Video Player - " + currentLesson.title;
+        document.getElementById('videoDuration').innerText = currentLesson.duration;
+        document.getElementById('lessonIndex').innerText = `Pelajaran ${index + 1} dari ${lessons.length}`;
+        document.getElementById('lessonDuration').innerText = currentLesson.duration;
+
+        // Update Active State di Sidebar
+        document.querySelectorAll('[id^="lesson-btn-"]').forEach(btn => {
+            btn.classList.remove('bg-gray-700', 'border-l-4', 'border-l-blue-600');
+            btn.querySelector('[id^="title-text-"]').classList.remove('text-blue-400');
+        });
+        const activeBtn = document.getElementById(`lesson-btn-${index}`);
+        activeBtn.classList.add('bg-gray-700', 'border-l-4', 'border-l-blue-600');
+        activeBtn.querySelector(`#title-text-${index}`).classList.add('text-blue-400');
+
+        // Update Tombol Status
+        updateStatusButtons(currentLesson.id);
+        
+        // Update Navigasi
+        document.getElementById('btnPrev').disabled = index === 0;
+        document.getElementById('btnNext').disabled = index === lessons.length - 1;
+    }
+
+    function updateStatusButtons(lessonId) {
+        const isCompleted = completedIds.includes(lessonId);
+        if (isCompleted) {
+            document.getElementById('btnMarkComplete').classList.add('hidden');
+            document.getElementById('badgeCompleted').classList.remove('hidden');
+        } else {
+            document.getElementById('btnMarkComplete').classList.remove('hidden');
+            document.getElementById('badgeCompleted').classList.add('hidden');
+        }
+    }
+
+    function nextLesson() {
+        if (currentIndex < lessons.length - 1) {
+            const next = lessons[currentIndex + 1];
+            loadLesson(currentIndex + 1, next.id, next.title, next.duration);
+        }
+    }
+
+    function prevLesson() {
+        if (currentIndex > 0) {
+            const prev = lessons[currentIndex - 1];
+            loadLesson(currentIndex - 1, prev.id, prev.title, prev.duration);
+        }
+    }
+
+    // AJAX Mark Complete
+    function markComplete() {
+        const currentLesson = lessons[currentIndex];
+        
+        fetch('/api/mark-complete', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ course_id: courseId, lesson_id: currentLesson.id })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                // Update Local State
+                if (!completedIds.includes(currentLesson.id)) {
+                    completedIds.push(currentLesson.id);
+                }
+                
+                // Update UI Progress
+                document.getElementById('progressText').innerText = data.progress + '%';
+                document.getElementById('progressBar').style.width = data.progress + '%';
+                
+                // Update Sidebar Icon
+                const iconDiv = document.getElementById(`icon-status-${currentLesson.id}`);
+                iconDiv.innerHTML = '<svg class="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>';
+                
+                updateStatusButtons(currentLesson.id);
+
+                // Cek jika semua selesai
+                if (data.is_completed) {
+                    document.getElementById('certButtonArea').classList.remove('hidden');
+                    document.getElementById('certPopup').classList.remove('hidden');
+                    document.getElementById('certPopup').classList.add('flex');
+                }
+            }
+        });
+    }
+
+    // Load pelajaran pertama saat halaman dibuka
+    window.onload = function() {
+        if (lessons.length > 0) {
+            loadLesson(0, lessons[0].id, lessons[0].title, lessons[0].duration);
+        }
+    };
+</script>
+{% endblock %}

@@ -1,0 +1,140 @@
+<section class="relative pt-24 pb-20 overflow-hidden">
+    <!-- Custom CSS untuk Animasi Blob -->
+    <style>
+        @keyframes blob {
+            0%, 100% { transform: translate(0px, 0px) scale(1); }
+            33% { transform: translate(30px, -50px) scale(1.1); }
+            66% { transform: translate(-20px, 20px) scale(0.9); }
+        }
+        .animate-blob {
+            animation: blob 7s infinite;
+        }
+        .animation-delay-2000 {
+            animation-delay: 2s;
+        }
+        .animation-delay-4000 {
+            animation-delay: 4s;
+        }
+    </style>
+
+    <!-- Animated Background -->
+    <div class="absolute inset-0 bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-700">
+        <div class="absolute inset-0 opacity-20">
+            <div class="absolute top-0 -left-4 w-72 h-72 bg-purple-300 rounded-full mix-blend-multiply filter blur-xl animate-blob"></div>
+            <div class="absolute top-0 -right-4 w-72 h-72 bg-yellow-300 rounded-full mix-blend-multiply filter blur-xl animate-blob animation-delay-2000"></div>
+            <div class="absolute -bottom-8 left-20 w-72 h-72 bg-pink-300 rounded-full mix-blend-multiply filter blur-xl animate-blob animation-delay-4000"></div>
+        </div>
+    </div>
+
+    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid lg:grid-cols-2 gap-12 items-center">
+            <!-- Left Content -->
+            <div class="text-white space-y-8">
+                <div class="inline-block">
+                    <span class="bg-white/20 backdrop-blur-sm text-white px-4 py-2 rounded-full text-sm font-medium">
+                        🎓 Platform Pembelajaran #1 untuk SMK
+                    </span>
+                </div>
+
+                <h1 class="text-5xl md:text-6xl font-extrabold leading-tight">
+                    Tingkatkan Skill Digital
+                    <span class="block bg-gradient-to-r from-yellow-300 to-orange-300 bg-clip-text text-transparent">
+                        Bersama Expert
+                    </span>
+                </h1>
+
+                <p class="text-xl text-blue-100 leading-relaxed">
+                    Akses ribuan kursus berkualitas tinggi dalam IT, Office, dan Digital Marketing. 
+                    Belajar dari instruktur berpengalaman dengan metode yang interaktif dan menyenangkan.
+                </p>
+
+                <!-- CTA Buttons -->
+                <div class="flex flex-col sm:flex-row gap-4">
+                    <a href="{{ url_for('register') }}" class="group bg-white text-blue-600 px-8 py-4 rounded-xl hover:bg-yellow-300 hover:text-gray-900 transition-all duration-300 flex items-center justify-center gap-2 shadow-xl hover:shadow-2xl hover:scale-105 font-bold">
+                        <span>Daftar Gratis Sekarang</span>
+                        <!-- Icon Play -->
+                        <svg class="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                    </a>
+                    <a href="#kursus" class="border-2 border-white text-white px-8 py-4 rounded-xl hover:bg-white hover:text-blue-600 transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105 font-bold text-center">
+                        Jelajahi Kursus
+                    </a>
+                </div>
+
+                <!-- Stats -->
+                <div class="grid grid-cols-3 gap-6 pt-8 border-t border-white/20">
+                    <div>
+                        <div class="text-3xl font-bold mb-1">10K+</div>
+                        <div class="text-blue-200 text-sm">Siswa Aktif</div>
+                    </div>
+                    <div>
+                        <div class="text-3xl font-bold mb-1">50+</div>
+                        <div class="text-blue-200 text-sm">Kursus Premium</div>
+                    </div>
+                    <div>
+                        <div class="text-3xl font-bold mb-1">4.8★</div>
+                        <div class="text-blue-200 text-sm">Rating Rata-rata</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Content - Feature Cards -->
+            <div class="relative hidden lg:block">
+                <div class="space-y-4">
+                    <!-- Card 1 -->
+                    <div class="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-6 hover:bg-white/20 transition-all duration-300 hover:scale-105 hover:-translate-y-1 cursor-default">
+                        <div class="flex items-center gap-4">
+                            <div class="bg-gradient-to-br from-yellow-400 to-orange-500 p-3 rounded-xl">
+                                <!-- Icon BookOpen -->
+                                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+                            </div>
+                            <div class="text-white">
+                                <div class="text-lg font-bold mb-1">Materi Lengkap & Terstruktur</div>
+                                <div class="text-sm text-blue-200">Video HD, quiz interaktif, dan project nyata</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Card 2 -->
+                    <div class="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-6 hover:bg-white/20 transition-all duration-300 hover:scale-105 hover:-translate-y-1 ml-8 cursor-default">
+                        <div class="flex items-center gap-4">
+                            <div class="bg-gradient-to-br from-green-400 to-emerald-500 p-3 rounded-xl">
+                                <!-- Icon Users -->
+                                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+                            </div>
+                            <div class="text-white">
+                                <div class="text-lg font-bold mb-1">Instruktur Berpengalaman</div>
+                                <div class="text-sm text-blue-200">Belajar dari praktisi industri terbaik</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Card 3 -->
+                    <div class="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-6 hover:bg-white/20 transition-all duration-300 hover:scale-105 hover:-translate-y-1 cursor-default">
+                        <div class="flex items-center gap-4">
+                            <div class="bg-gradient-to-br from-purple-400 to-pink-500 p-3 rounded-xl">
+                                <!-- Icon Award -->
+                                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138z"/></svg>
+                            </div>
+                            <div class="text-white">
+                                <div class="text-lg font-bold mb-1">Sertifikat Resmi</div>
+                                <div class="text-sm text-blue-200">Dapatkan sertifikat setelah menyelesaikan kursus</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Floating Badge -->
+                <div class="absolute -top-4 -right-4 bg-gradient-to-br from-yellow-400 to-orange-500 text-white px-6 py-3 rounded-full shadow-2xl animate-bounce">
+                    <div class="text-sm font-bold">Promo 30% OFF</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Wave Divider -->
+    <div class="absolute bottom-0 left-0 right-0">
+        <svg viewBox="0 0 1440 120" class="w-full h-auto block">
+            <path fill="#f9fafb" d="M0,64L48,69.3C96,75,192,85,288,80C384,75,480,53,576,48C672,43,768,53,864,58.7C960,64,1056,64,1152,58.7C1248,53,1344,43,1392,37.3L1440,32L1440,120L1392,120C1344,120,1248,120,1152,120C1056,120,960,120,864,120C768,120,672,120,576,120C480,120,384,120,288,120C192,120,96,120,48,120L0,120Z"></path>
+        </svg>
+    </div>
+</section>

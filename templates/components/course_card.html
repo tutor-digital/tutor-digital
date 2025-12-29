@@ -1,0 +1,108 @@
+{% macro render_course_card(course) %}
+{% set discounted_price = course.price * (1 - course.discount / 100) %}
+
+<a href="{{ url_for('course_detail', course_id=course.id) }}" class="block group">
+    <div class="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 cursor-pointer transform hover:-translate-y-2 h-full flex flex-col">
+        
+        <!-- Image Section -->
+        <div class="relative h-48 overflow-hidden">
+            <img 
+                src="{{ course.image }}" 
+                alt="{{ course.title }}" 
+                class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                onerror="this.src='https://via.placeholder.com/400x300?text=No+Image'"
+            >
+            
+            <!-- Gradient Overlay -->
+            <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
+            
+            <!-- Category Badge -->
+            <div class="absolute top-4 left-4">
+                <span class="bg-gradient-to-r from-blue-500 to-indigo-600 text-white px-4 py-2 rounded-full text-sm shadow-lg">
+                    {{ course.category }}
+                </span>
+            </div>
+            
+            <!-- Level Badge -->
+            <div class="absolute top-4 right-4">
+                <span class="bg-white/90 backdrop-blur-sm text-gray-900 px-4 py-2 rounded-full text-sm shadow-lg">
+                    {{ course.level }}
+                </span>
+            </div>
+            
+            <!-- Discount Badge -->
+            {% if course.discount > 0 %}
+            <div class="absolute bottom-4 right-4">
+                <span class="bg-gradient-to-r from-red-500 to-pink-600 text-white px-4 py-2 rounded-full text-sm shadow-lg animate-pulse">
+                    -{{ course.discount }}%
+                </span>
+            </div>
+            {% endif %}
+
+            <!-- Play Icon Overlay -->
+            <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                <div class="bg-white/90 backdrop-blur-sm w-16 h-16 rounded-full flex items-center justify-center shadow-2xl transform scale-90 group-hover:scale-100 transition-transform">
+                    <!-- Lucide Play Icon -->
+                    <svg class="w-8 h-8 text-blue-600 ml-1" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M8 5v14l11-7z" />
+                    </svg>
+                </div>
+            </div>
+        </div>
+
+        <!-- Content Section -->
+        <div class="p-6 space-y-4 flex-1 flex flex-col">
+            <h3 class="text-xl font-bold text-gray-900 line-clamp-2 group-hover:text-blue-600 transition-colors">
+                {{ course.title }}
+            </h3>
+            
+            <p class="text-gray-600 line-clamp-2 text-sm flex-1">
+                {{ course.description }}
+            </p>
+
+            <!-- Metadata Icons -->
+            <div class="flex items-center gap-4 text-sm text-gray-600 mt-auto">
+                <div class="flex items-center gap-1">
+                    <!-- Clock Icon -->
+                    <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    <span>{{ course.duration }}</span>
+                </div>
+                <div class="flex items-center gap-1">
+                    <!-- Users Icon -->
+                    <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                    <span>{{ "{:,.0f}".format(course.students) }}</span>
+                </div>
+                <div class="flex items-center gap-1">
+                    <!-- Star Icon -->
+                    <svg class="w-4 h-4 text-yellow-400 fill-yellow-400" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>
+                    <span>{{ course.rating }}</span>
+                </div>
+            </div>
+
+            <!-- Price Section -->
+            {% if course.price > 0 %}
+            <div class="pt-4 border-t border-gray-200">
+                {% if course.discount > 0 %}
+                <div class="flex items-baseline gap-3">
+                    <span class="text-2xl font-bold text-transparent bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text">
+                        Rp {{ "{:,.0f}".format(discounted_price) }}
+                    </span>
+                    <span class="text-sm text-gray-400 line-through">
+                        Rp {{ "{:,.0f}".format(course.price) }}
+                    </span>
+                </div>
+                {% else %}
+                <div class="text-2xl font-bold text-transparent bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text">
+                    Rp {{ "{:,.0f}".format(course.price) }}
+                </div>
+                {% endif %}
+            </div>
+            {% endif %}
+
+            <button class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-3 rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 font-medium">
+                Lihat Detail
+            </button>
+        </div>
+    </div>
+</a>
+{% endmacro %}

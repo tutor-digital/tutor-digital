@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 py-12">
+    <div class="grid md:grid-cols-2 gap-12">
+        <div>
+            <img src="{{ course.image }}" class="w-full rounded-xl shadow-lg mb-6">
+        </div>
+        <div>
+            <h1 class="text-4xl font-bold mb-4">{{ course.title }}</h1>
+            <p class="text-gray-600 text-lg mb-6">{{ course.description }}</p>
+            
+            <div class="grid grid-cols-2 gap-4 mb-8">
+                <div class="bg-gray-100 p-4 rounded">
+                    <span class="block text-gray-500 text-sm">Instruktur</span>
+                    <span class="font-bold">{{ course.instructor }}</span>
+                </div>
+                <div class="bg-gray-100 p-4 rounded">
+                    <span class="block text-gray-500 text-sm">Durasi</span>
+                    <span class="font-bold">{{ course.duration }}</span>
+                </div>
+            </div>
+
+            <div class="border-t pt-6">
+                <div class="text-3xl font-bold text-blue-600 mb-6">
+                    Rp {{ "{:,.0f}".format(course.price * (1 - course.discount/100)) }}
+                </div>
+                <a href="{{ url_for('add_to_cart', course_id=course.id) }}" class="block w-full bg-blue-600 text-white text-center py-4 rounded-lg font-bold hover:bg-blue-700">
+                    Tambah ke Keranjang
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

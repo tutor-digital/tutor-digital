@@ -1,0 +1,61 @@
+<footer class="bg-gray-900 text-gray-300 py-12 mt-auto">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid md:grid-cols-4 gap-8 mb-8">
+            <!-- Brand Section -->
+            <div class="space-y-4">
+                <div class="flex items-center gap-2">
+                    <div class="bg-blue-600 p-2 rounded-lg">
+                        <!-- Icon GraduationCap -->
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M22 10v6M2 10l10-5 10 5-10 5-10-5z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 12v5c3 3 9 3 12 0v-5"></path>
+                        </svg>
+                    </div>
+                    <span class="text-xl font-bold text-white">Tutor Digital</span>
+                </div>
+                <p class="text-gray-400">
+                    Platform kursus online untuk mengembangkan keterampilan digital pelajar SMK.
+                </p>
+            </div>
+
+            <!-- Kursus Links -->
+            <div>
+                <h4 class="text-white font-bold mb-4">Kursus</h4>
+                <ul class="space-y-2">
+                    <!-- Menggunakan filter kategori yang sudah kita buat di index -->
+                    <li><a href="{{ url_for('home', category='IT') }}#kursus" class="hover:text-blue-400 transition-colors">IT & Software</a></li>
+                    <li><a href="{{ url_for('home', category='Digitalisasi') }}#kursus" class="hover:text-blue-400 transition-colors">Desain Grafis</a></li>
+                    <li><a href="{{ url_for('home', category='Office') }}#kursus" class="hover:text-blue-400 transition-colors">Microsoft Office</a></li>
+                    <li><a href="{{ url_for('home', category='Digitalisasi') }}#kursus" class="hover:text-blue-400 transition-colors">Digital Marketing</a></li>
+                </ul>
+            </div>
+
+            <!-- Perusahaan Links -->
+            <div>
+                <h4 class="text-white font-bold mb-4">Perusahaan</h4>
+                <ul class="space-y-2">
+                    <li><a href="#" class="hover:text-blue-400 transition-colors">Tentang Kami</a></li>
+                    <li><a href="#" class="hover:text-blue-400 transition-colors">Instruktur</a></li>
+                    <li><a href="#" class="hover:text-blue-400 transition-colors">Blog</a></li>
+                    <li><a href="#" class="hover:text-blue-400 transition-colors">Karir</a></li>
+                </ul>
+            </div>
+
+            <!-- Bantuan Links -->
+            <div>
+                <h4 class="text-white font-bold mb-4">Bantuan</h4>
+                <ul class="space-y-2">
+                    <li><a href="#" class="hover:text-blue-400 transition-colors">FAQ</a></li>
+                    <li><a href="#" class="hover:text-blue-400 transition-colors">Kontak</a></li>
+                    <li><a href="#" class="hover:text-blue-400 transition-colors">Kebijakan Privasi</a></li>
+                    <li><a href="#" class="hover:text-blue-400 transition-colors">Syarat & Ketentuan</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Copyright -->
+        <div class="border-t border-gray-800 pt-8 text-center text-gray-400">
+            <p>&copy; 2025 Tutor Digital. Semua hak cipta dilindungi.</p>
+        </div>
+    </div>
+</footer>

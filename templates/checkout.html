@@ -1,0 +1,189 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-5xl mx-auto">
+        <!-- Tombol Kembali -->
+        <a href="{{ url_for('cart') }}" class="flex items-center gap-2 text-gray-600 hover:text-blue-600 transition-colors mb-6">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+            Kembali ke Keranjang
+        </a>
+
+        <div class="grid lg:grid-cols-3 gap-8">
+            <!-- Payment Form -->
+            <div class="lg:col-span-2">
+                <div class="bg-white rounded-2xl shadow-lg p-8">
+                    <h1 class="text-3xl text-gray-900 mb-8">Pembayaran</h1>
+
+                    <form method="POST" id="checkoutForm" class="space-y-6">
+                        <!-- Payment Method Selection -->
+                        <div>
+                            <h2 class="text-xl text-gray-900 mb-4">Metode Pembayaran</h2>
+                            
+                            <div class="space-y-3">
+                                <!-- 1. KARTU KREDIT -->
+                                <label class="flex items-center gap-3 p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
+                                    <input type="radio" name="payment_category" value="credit_card" class="w-4 h-4 text-blue-600 focus:ring-blue-500" onchange="handlePaymentChange('credit')">
+                                    <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
+                                    <span class="text-gray-900 font-medium">Kartu Kredit/Debit</span>
+                                </label>
+
+                                <!-- DETAIL KARTU KREDIT (Hidden by default) -->
+                                <div id="creditDetails" class="hidden pl-4 border-l-2 border-gray-200 space-y-4 ml-2">
+                                    <div class="bg-gray-50 p-4 rounded-lg space-y-3">
+                                        <div>
+                                            <label class="block text-xs text-gray-500 mb-1">Nomor Kartu</label>
+                                            <input type="text" placeholder="0000 0000 0000 0000" class="w-full px-3 py-2 border rounded text-sm">
+                                        </div>
+                                        <div class="grid grid-cols-2 gap-3">
+                                            <div>
+                                                <label class="block text-xs text-gray-500 mb-1">Exp Date</label>
+                                                <input type="text" placeholder="MM/YY" class="w-full px-3 py-2 border rounded text-sm">
+                                            </div>
+                                            <div>
+                                                <label class="block text-xs text-gray-500 mb-1">CVV</label>
+                                                <input type="text" placeholder="123" maxlength="3" class="w-full px-3 py-2 border rounded text-sm">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- 2. TRANSFER BANK -->
+                                <label class="flex items-center gap-3 p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
+                                    <input type="radio" name="payment_category" value="bank_transfer" class="w-4 h-4 text-blue-600 focus:ring-blue-500" onchange="handlePaymentChange('bank')">
+                                    <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M3 7l9-4 9 4M4 10h16v11H4V10z"/></svg>
+                                    <span class="text-gray-900 font-medium">Transfer Bank</span>
+                                </label>
+
+                                <!-- DETAIL TRANSFER BANK (Hidden by default) -->
+                                <div id="bankDetails" class="hidden pl-4 border-l-2 border-gray-200 space-y-2 ml-2">
+                                    <label class="flex items-center gap-3 p-3 bg-white border border-gray-200 rounded cursor-pointer hover:border-blue-500">
+                                        <input type="radio" name="payment" value="Transfer Bank - BCA" class="w-4 h-4 text-blue-600">
+                                        <div class="flex flex-col">
+                                            <span class="font-bold text-blue-800">BCA</span>
+                                            <span class="text-xs text-gray-500">Cek Otomatis</span>
+                                        </div>
+                                    </label>
+                                    <label class="flex items-center gap-3 p-3 bg-white border border-gray-200 rounded cursor-pointer hover:border-blue-500">
+                                        <input type="radio" name="payment" value="Transfer Bank - Mandiri" class="w-4 h-4 text-blue-600">
+                                        <div class="flex flex-col">
+                                            <span class="font-bold text-blue-800">Mandiri</span>
+                                            <span class="text-xs text-gray-500">Cek Otomatis</span>
+                                        </div>
+                                    </label>
+                                </div>
+
+                                <!-- 3. E-WALLET -->
+                                <label class="flex items-center gap-3 p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
+                                    <input type="radio" name="payment_category" value="ewallet" class="w-4 h-4 text-blue-600 focus:ring-blue-500" onchange="handlePaymentChange('ewallet')">
+                                    <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+                                    <span class="text-gray-900 font-medium">E-Wallet (QRIS)</span>
+                                </label>
+
+                                <!-- DETAIL E-WALLET (Hidden by default) -->
+                                <div id="ewalletDetails" class="hidden pl-4 border-l-2 border-gray-200 space-y-2 ml-2">
+                                    <label class="flex items-center gap-3 p-3 bg-white border border-gray-200 rounded cursor-pointer hover:border-blue-500">
+                                        <input type="radio" name="payment" value="QRIS" class="w-4 h-4 text-blue-600">
+                                        <div class="flex items-center gap-3">
+                                            <!-- Icon QRIS Sederhana -->
+                                            <svg class="w-8 h-8 text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"/></svg>
+                                            <div class="flex flex-col">
+                                                <span class="font-bold text-gray-900">QRIS</span>
+                                                <span class="text-xs text-gray-500">Scan via GoPay, OVO, Dana, ShopeePay</span>
+                                            </div>
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Billing Info -->
+                        <div class="space-y-4 pt-6 border-t">
+                            <h2 class="text-xl text-gray-900">Informasi Penagihan</h2>
+                            <div class="grid md:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm text-gray-700 mb-2">Nama Lengkap</label>
+                                    <input type="text" value="{{ current_user.username }}" readonly class="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-100 cursor-not-allowed">
+                                </div>
+                                <div>
+                                    <label class="block text-sm text-gray-700 mb-2">Email</label>
+                                    <input type="email" value="{{ current_user.email }}" readonly class="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-100 cursor-not-allowed">
+                                </div>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="w-full bg-blue-600 text-white py-4 rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center gap-2 font-bold text-lg shadow-lg">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                            Bayar Sekarang
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Order Summary -->
+            <div class="lg:col-span-1">
+                <div class="bg-white rounded-2xl shadow-lg p-6 sticky top-24">
+                    <h2 class="text-xl text-gray-900 mb-4">Ringkasan Pesanan</h2>
+
+                    <div class="space-y-3 mb-6">
+                        {% for course in courses %}
+                        {% set final_price = course.price * (1 - course.discount / 100) %}
+                        <div class="flex justify-between text-sm">
+                            <span class="text-gray-700 flex-1 mr-2">{{ course.title }}</span>
+                            <span class="text-gray-900 font-medium">Rp {{ "{:,.0f}".format(final_price) }}</span>
+                        </div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="border-t pt-4 space-y-2">
+                        <div class="flex justify-between text-gray-600">
+                            <span>Subtotal</span>
+                            <span>Rp {{ "{:,.0f}".format(total) }}</span>
+                        </div>
+                        <div class="flex justify-between text-gray-600">
+                            <span>Biaya Admin</span>
+                            <span>Rp 0</span>
+                        </div>
+                        <div class="border-t pt-2">
+                            <div class="flex justify-between text-xl text-gray-900 font-bold">
+                                <span>Total</span>
+                                <span>Rp {{ "{:,.0f}".format(total) }}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-6 pt-6 border-t space-y-2">
+                        <div class="flex items-center gap-2 text-sm text-gray-600">
+                            <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+                            <span>Pembayaran aman & terenkripsi</span>
+                        </div>
+                        <div class="flex items-center gap-2 text-sm text-gray-600">
+                            <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            <span>Garansi 30 hari uang kembali</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function handlePaymentChange(type) {
+        // Sembunyikan semua detail terlebih dahulu
+        document.getElementById('creditDetails').classList.add('hidden');
+        document.getElementById('bankDetails').classList.add('hidden');
+        document.getElementById('ewalletDetails').classList.add('hidden');
+
+        // Tampilkan detail yang dipilih
+        if (type === 'credit') {
+            document.getElementById('creditDetails').classList.remove('hidden');
+            // Set value hidden input jika perlu, atau biarkan backend handle
+        } else if (type === 'bank') {
+            document.getElementById('bankDetails').classList.remove('hidden');
+        } else if (type === 'ewallet') {
+            document.getElementById('ewalletDetails').classList.remove('hidden');
+        }
+    }
+</script>
+{% endblock %}

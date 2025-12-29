@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 py-8 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-7xl mx-auto">
+        <!-- Tombol Kembali -->
+        <a href="{{ url_for('home') }}" class="flex items-center gap-2 text-gray-600 hover:text-blue-600 transition-colors mb-6">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+            Kembali
+        </a>
+
+        <div class="mb-8">
+            <h1 class="text-4xl font-bold text-gray-900 mb-2">Kursus Saya</h1>
+            <p class="text-xl text-gray-600">Lanjutkan pembelajaran Anda dan raih sertifikat</p>
+        </div>
+
+        {% if not courses_data %}
+            <!-- Empty State -->
+            <div class="bg-white rounded-2xl shadow-lg p-12 text-center">
+                <div class="bg-blue-100 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <svg class="w-10 h-10 text-blue-600" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                </div>
+                <h2 class="text-2xl font-bold text-gray-900 mb-4">Belum Ada Kursus</h2>
+                <p class="text-gray-600 mb-8">Anda belum membeli kursus apapun. Mulai belajar dengan memilih kursus yang sesuai!</p>
+                <a href="{{ url_for('home') }}#kursus" class="inline-block bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700 transition-colors font-medium">
+                    Jelajahi Kursus
+                </a>
+            </div>
+        {% else %}
+            <!-- Course Grid -->
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {% for item in courses_data %}
+                {% set course = item.course %}
+                <div class="bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 group flex flex-col">
+                    <!-- Course Image -->
+                    <div class="relative h-48 overflow-hidden">
+                        <img src="{{ course.image }}" alt="{{ course.title }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300" onerror="this.src='https://via.placeholder.com/400x300?text=No+Image'">
+                        
+                        <!-- Progress Badge -->
+                        <div class="absolute top-4 right-4">
+                            {% if item.is_completed %}
+                                <div class="bg-green-500 text-white px-3 py-1 rounded-full text-sm flex items-center gap-1 font-medium shadow-sm">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                    Selesai
+                                </div>
+                            {% else %}
+                                <div class="bg-blue-600 text-white px-3 py-1 rounded-full text-sm font-medium shadow-sm">
+                                    {{ item.progress }}%
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Play Overlay -->
+                        <a href="{{ url_for('learning', course_id=course.id) }}" class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                            <div class="bg-white/90 w-16 h-16 rounded-full flex items-center justify-center shadow-lg transform scale-90 group-hover:scale-100 transition-transform">
+                                <svg class="w-8 h-8 text-blue-600 ml-1" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                            </div>
+                        </a>
+                    </div>
+
+                    <!-- Course Info -->
+                    <div class="p-6 flex-1 flex flex-col">
+                        <h3 class="text-xl font-bold text-gray-900 mb-2 line-clamp-2 group-hover:text-blue-600 transition-colors">
+                            {{ course.title }}
+                        </h3>
+
+                        <div class="flex items-center gap-2 text-sm text-gray-600 mb-4">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            <span>{{ course.duration }}</span>
+                            <span>•</span>
+                            <span>{{ course.lessons|length }} pelajaran</span>
+                        </div>
+
+                        <!-- Progress Bar -->
+                        {% if not item.is_completed %}
+                            <div class="mb-4 mt-auto">
+                                <div class="flex justify-between text-sm text-gray-600 mb-2">
+                                    <span>Progress</span>
+                                    <span class="font-medium">{{ item.progress }}%</span>
+                                </div>
+                                <div class="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
+                                    <div class="h-full bg-gradient-to-r from-blue-500 to-indigo-600 transition-all duration-500" style="width: {{ item.progress }}%"></div>
+                                </div>
+                            </div>
+                        {% else %}
+                            <div class="mt-auto"></div>
+                        {% endif %}
+
+                        <!-- Actions -->
+                        <div class="space-y-2 mt-4">
+                            {% if item.is_completed %}
+                                <a href="{{ url_for('view_certificate', course_id=course.id) }}" class="w-full bg-gradient-to-r from-yellow-500 to-orange-500 text-white py-3 rounded-lg hover:from-yellow-600 hover:to-orange-600 transition-all flex items-center justify-center gap-2 font-bold shadow-md hover:shadow-lg">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 01-3.138-3.138z"/></svg>
+                                    Lihat Sertifikat
+                                </a>
+                                <a href="{{ url_for('learning', course_id=course.id) }}" class="block w-full border border-gray-300 text-gray-700 py-3 rounded-lg hover:bg-gray-50 transition-colors text-center font-medium">
+                                    Tinjau Ulang
+                                </a>
+                            {% else %}
+                                <a href="{{ url_for('learning', course_id=course.id) }}" class="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center gap-2 font-bold shadow-md hover:shadow-lg">
+                                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                                    {{ 'Lanjutkan Belajar' if item.progress > 0 else 'Mulai Belajar' }}
+                                </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Stats Section -->
+            <div class="mt-12 grid md:grid-cols-3 gap-6">
+                <div class="bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl p-6 text-white shadow-lg transform hover:scale-105 transition-transform">
+                    <div class="text-4xl font-bold mb-2">{{ stats.total }}</div>
+                    <div class="text-blue-100 font-medium">Total Kursus</div>
+                </div>
+                <div class="bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl p-6 text-white shadow-lg transform hover:scale-105 transition-transform">
+                    <div class="text-4xl font-bold mb-2">{{ stats.completed }}</div>
+                    <div class="text-green-100 font-medium">Kursus Selesai</div>
+                </div>
+                <div class="bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl p-6 text-white shadow-lg transform hover:scale-105 transition-transform">
+                    <div class="text-4xl font-bold mb-2">{{ stats.in_progress }}</div>
+                    <div class="text-purple-100 font-medium">Sedang Belajar</div>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
