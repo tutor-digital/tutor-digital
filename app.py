@@ -28,7 +28,7 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
 cloudinary.config(
-    cloud_name = os.getenv('CLOUDINARY_CLOUD_NAME', dayrdc0e7),
+    cloud_name = os.getenv('CLOUDINARY_CLOUD_NAME', 'dayrdc0e7'),
     api_key = os.getenv('CLOUDINARY_API_KEY', '666881136682946'),
     api_secret = os.getenv('CLOUDINARY_API_SECRET', 'CXX8AQcmKQ5m-MxMxxeTNAT9IDU')
 )
