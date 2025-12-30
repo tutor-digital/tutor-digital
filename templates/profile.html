@@ -13,14 +13,40 @@
             <!-- Header with Profile Image -->
             <div class="bg-gradient-to-r from-blue-600 to-indigo-600 p-8">
                 <div class="flex flex-col md:flex-row items-center gap-6">
-                    <div class="relative">
-                        <div class="w-32 h-32 rounded-full overflow-hidden border-4 border-white shadow-lg bg-white flex items-center justify-center">
-                            <!-- Inisial Nama sebagai Avatar Default -->
-                            <span class="text-4xl font-bold text-blue-600">{{ current_user.username[0]|upper }}</span>
+                    
+                    <!-- AREA FOTO PROFIL -->
+                    <div class="relative group">
+                        <div class="w-32 h-32 rounded-full overflow-hidden border-4 border-white shadow-lg bg-white flex items-center justify-center relative">
+                            
+                            <!-- 1. Tampilkan Gambar Jika Ada -->
+                            <img id="avatarPreview" 
+                                 src="{{ url_for('static', filename='uploads/' + current_user.profile_image) if current_user.profile_image else '#' }}" 
+                                 class="w-full h-full object-cover {{ 'hidden' if not current_user.profile_image else '' }}" 
+                                 alt="Avatar">
+                            
+                            <!-- 2. Tampilkan Inisial Jika Tidak Ada Gambar -->
+                            <span id="avatarInitial" class="text-4xl font-bold text-blue-600 {{ 'hidden' if current_user.profile_image else '' }}">
+                                {{ current_user.username[0]|upper }}
+                            </span>
+
+                            <!-- Overlay Hover Effect -->
+                            <div class="absolute inset-0 bg-black bg-opacity-30 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center pointer-events-none">
+                                <span class="text-white text-xs font-bold">Ubah Foto</span>
+                            </div>
                         </div>
-                        <!-- Tombol Upload (Simulasi) -->
-                        <label class="absolute bottom-0 right-0 bg-blue-600 text-white p-2 rounded-full cursor-pointer hover:bg-blue-700 transition-colors shadow-lg">
+
+                        <!-- 3. TOMBOL UPLOAD (INPUT FILE) -->
+                        <!-- Perhatikan atribut form="profileForm". Ini menghubungkan input ini ke form di bawah -->
+                        <label for="avatarInput" class="absolute bottom-0 right-0 bg-white text-blue-600 p-2 rounded-full cursor-pointer hover:bg-gray-100 transition-colors shadow-lg border border-gray-200 z-10">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                            
+                            <input type="file" 
+                                   id="avatarInput" 
+                                   name="profile_image" 
+                                   form="profileForm" 
+                                   accept="image/*" 
+                                   class="hidden" 
+                                   onchange="previewAvatar(event)">
                         </label>
                     </div>
 
@@ -50,20 +76,10 @@
 
             <!-- Content Area -->
             <div class="p-8">
-                <!-- Flash Messages Khusus Profile -->
-                {% with messages = get_flashed_messages(with_categories=true) %}
-                    {% if messages %}
-                        {% for category, message in messages %}
-                            <div class="mb-6 px-4 py-3 rounded-lg {{ 'bg-green-50 border border-green-200 text-green-700' if category == 'success' else 'bg-red-50 border border-red-200 text-red-700' }}">
-                                {{ message }}
-                            </div>
-                        {% endfor %}
-                    {% endif %}
-                {% endwith %}
-
                 <!-- TAB 1: PROFILE FORM -->
+                <!-- PENTING: Tambahkan ID="profileForm" dan enctype -->
                 <div id="content-profile">
-                    <form method="POST" class="space-y-6">
+                    <form method="POST" id="profileForm" enctype="multipart/form-data" class="space-y-6">
                         <input type="hidden" name="action" value="update_profile">
                         
                         <div class="grid md:grid-cols-2 gap-6">
@@ -77,24 +93,26 @@
                             </div>
                             <div>
                                 <label class="block text-sm text-gray-700 mb-2 font-medium">Nomor Telepon</label>
-                                <input type="tel" name="phone" value="" placeholder="0812..." class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 outline-none">
+                                <input type="tel" name="phone" value="{{ current_user.phone or '' }}" placeholder="0812..." class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 outline-none">
                             </div>
                             <div>
-                                <label class="block text-sm text-gray-700 mb-2 font-medium">Nama SMK *</label>
+                                <label class="block text-sm text-gray-700 mb-2 font-medium">Nama SMK / Institusi *</label>
                                 <input type="text" name="school" value="{{ current_user.school }}" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 outline-none">
                             </div>
                         </div>
 
-                        <button type="submit" class="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center gap-2 font-bold">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"/></svg>
-                            Simpan Perubahan
-                        </button>
+                        <div class="flex justify-end">
+                            <button type="submit" class="bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2 font-bold shadow-lg">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"/></svg>
+                                Simpan Perubahan
+                            </button>
+                        </div>
                     </form>
                 </div>
 
                 <!-- TAB 2: PASSWORD FORM -->
                 <div id="content-password" class="hidden">
-                    <form method="POST" class="space-y-6 max-w-xl">
+                    <form method="POST" class="space-y-6 max-w-xl mx-auto">
                         <input type="hidden" name="action" value="change_password">
 
                         <div>
@@ -112,16 +130,7 @@
                             <input type="password" name="confirmPassword" required minlength="6" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 outline-none">
                         </div>
 
-                        <div class="bg-blue-50 p-4 rounded-lg">
-                            <p class="text-sm text-gray-700 font-bold">Persyaratan Password:</p>
-                            <ul class="text-sm text-gray-600 mt-2 space-y-1 list-disc list-inside">
-                                <li>Minimal 6 karakter</li>
-                                <li>Disarankan menggunakan kombinasi huruf dan angka</li>
-                            </ul>
-                        </div>
-
                         <button type="submit" class="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center gap-2 font-bold">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
                             Ubah Password
                         </button>
                     </form>
@@ -132,26 +141,38 @@
 </div>
 
 <script>
+    // 1. Logic Switch Tab
     function switchTab(tabName) {
-        // Hide all content
         document.getElementById('content-profile').classList.add('hidden');
         document.getElementById('content-password').classList.add('hidden');
         
-        // Reset tab styles
-        const tabs = ['profile', 'password'];
-        tabs.forEach(t => {
+        ['profile', 'password'].forEach(t => {
             const btn = document.getElementById('tab-' + t);
             btn.classList.remove('border-blue-600', 'text-blue-600');
             btn.classList.add('border-transparent', 'text-gray-600');
         });
 
-        // Show selected content
         document.getElementById('content-' + tabName).classList.remove('hidden');
         
-        // Highlight selected tab
         const activeBtn = document.getElementById('tab-' + tabName);
         activeBtn.classList.remove('border-transparent', 'text-gray-600');
         activeBtn.classList.add('border-blue-600', 'text-blue-600');
+    }
+
+    // 2. Logic Preview Avatar
+    function previewAvatar(event) {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                // Sembunyikan inisial, tampilkan gambar
+                document.getElementById('avatarInitial').classList.add('hidden');
+                const img = document.getElementById('avatarPreview');
+                img.src = e.target.result;
+                img.classList.remove('hidden');
+            }
+            reader.readAsDataURL(file);
+        }
     }
 </script>
 {% endblock %}

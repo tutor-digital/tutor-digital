@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+
+{% block title %}Syarat & Ketentuan - Tutor Digital{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-4xl mx-auto bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+        
+        <!-- Header -->
+        <div class="bg-blue-600 px-8 py-10 text-white text-center">
+            <h1 class="text-3xl font-bold font-brand sm:text-4xl">Syarat & Ketentuan</h1>
+            <p class="mt-2 text-blue-100">Terakhir diperbarui: 30 Desember 2025</p>
+        </div>
+
+        <!-- Content -->
+        <div class="p-8 md:p-12 text-gray-600 leading-relaxed space-y-8">
+            <p class="text-lg text-gray-700">
+                Selamat datang di Tutor Digital. Dengan mengakses atau menggunakan platform kami, Anda setuju untuk terikat oleh Syarat dan Ketentuan berikut. Mohon membacanya dengan saksama.
+            </p>
+
+            <!-- Section 1 -->
+            <section>
+                <h2 class="text-xl font-bold text-gray-900 font-brand mb-3 flex items-center gap-2">
+                    <span class="bg-blue-100 text-blue-600 w-8 h-8 rounded-full flex items-center justify-center text-sm">1</span>
+                    Akun Pengguna
+                </h2>
+                <ul class="list-disc pl-12 space-y-2">
+                    <li>Anda wajib memberikan informasi yang akurat dan lengkap saat mendaftar (Nama, Email, Sekolah).</li>
+                    <li>Anda bertanggung jawab penuh atas keamanan kata sandi akun Anda.</li>
+                    <li>Satu akun hanya boleh digunakan oleh satu pengguna. <strong>Dilarang keras berbagi akun</strong> dengan orang lain.</li>
+                    <li>Kami berhak menonaktifkan akun jika terindikasi adanya aktivitas mencurigakan atau pelanggaran aturan.</li>
+                </ul>
+            </section>
+
+            <!-- Section 2 -->
+            <section>
+                <h2 class="text-xl font-bold text-gray-900 font-brand mb-3 flex items-center gap-2">
+                    <span class="bg-blue-100 text-blue-600 w-8 h-8 rounded-full flex items-center justify-center text-sm">2</span>
+                    Akses & Pembayaran
+                </h2>
+                <ul class="list-disc pl-12 space-y-2">
+                    <li>Kursus yang berbayar hanya dapat diakses setelah pembayaran dikonfirmasi oleh sistem/admin.</li>
+                    <li>Semua pembelian bersifat final. Kami tidak melayani pengembalian dana (refund) kecuali jika terjadi kesalahan teknis ganda pada sistem kami.</li>
+                    <li>Akses materi berlaku seumur hidup (lifetime access) selama platform Tutor Digital masih beroperasi.</li>
+                </ul>
+            </section>
+
+            <!-- Section 3 -->
+            <section>
+                <h2 class="text-xl font-bold text-gray-900 font-brand mb-3 flex items-center gap-2">
+                    <span class="bg-blue-100 text-blue-600 w-8 h-8 rounded-full flex items-center justify-center text-sm">3</span>
+                    Hak Kekayaan Intelektual
+                </h2>
+                <p class="pl-12 mb-2">
+                    Seluruh konten yang tersedia di Tutor Digital (Video, Teks, Kuis, Gambar, Logo) adalah milik Tutor Digital atau instruktur kami dan dilindungi oleh undang-undang hak cipta.
+                </p>
+                <div class="pl-12 bg-red-50 p-4 rounded-lg border border-red-100 text-red-800 text-sm font-medium">
+                    <strong class="block mb-1">DILARANG KERAS:</strong>
+                    Mendownload, merekam layar, menyebarluaskan, atau menjual kembali materi kursus tanpa izin tertulis dari Tutor Digital. Pelanggaran akan diproses secara hukum.
+                </div>
+            </section>
+
+            <!-- Section 4 -->
+            <section>
+                <h2 class="text-xl font-bold text-gray-900 font-brand mb-3 flex items-center gap-2">
+                    <span class="bg-blue-100 text-blue-600 w-8 h-8 rounded-full flex items-center justify-center text-sm">4</span>
+                    Sertifikat
+                </h2>
+                <ul class="list-disc pl-12 space-y-2">
+                    <li>Sertifikat hanya diberikan setelah siswa menyelesaikan 100% materi dan lulus kuis/ujian akhir.</li>
+                    <li>Nama yang tertera di sertifikat sesuai dengan nama profil akun saat sertifikat dicetak.</li>
+                </ul>
+            </section>
+
+            <!-- Footer Note -->
+            <div class="border-t border-gray-100 pt-8 mt-8">
+                <p class="text-sm text-gray-500">
+                    Jika Anda memiliki pertanyaan mengenai Syarat & Ketentuan ini, silakan hubungi kami di <a href="{{ url_for('contact') }}" class="text-blue-600 hover:underline">Halaman Kontak</a>.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

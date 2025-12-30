@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+
+{% block title %}Kebijakan Privasi - Tutor Digital{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-4xl mx-auto bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+        
+        <!-- Header -->
+        <div class="bg-gray-900 px-8 py-10 text-white text-center">
+            <h1 class="text-3xl font-bold font-brand sm:text-4xl">Kebijakan Privasi</h1>
+            <p class="mt-2 text-gray-400">Kami menghargai dan melindungi data pribadi Anda.</p>
+        </div>
+
+        <!-- Content -->
+        <div class="p-8 md:p-12 text-gray-600 leading-relaxed space-y-8">
+            <p class="text-lg text-gray-700">
+                Kebijakan Privasi ini menjelaskan bagaimana Tutor Digital mengumpulkan, menggunakan, dan melindungi informasi pribadi Anda saat menggunakan layanan kami.
+            </p>
+
+            <!-- Section 1 -->
+            <section>
+                <h3 class="text-lg font-bold text-gray-900 mb-2">1. Informasi yang Kami Kumpulkan</h3>
+                <p class="mb-2">Kami mengumpulkan informasi yang Anda berikan secara langsung, meliputi:</p>
+                <ul class="list-disc pl-5 space-y-1 bg-gray-50 p-4 rounded-lg border border-gray-100">
+                    <li><strong>Identitas:</strong> Nama lengkap, asal sekolah/institusi.</li>
+                    <li><strong>Kontak:</strong> Alamat email, nomor telepon.</li>
+                    <li><strong>Pembayaran:</strong> Bukti transfer atau riwayat transaksi (kami tidak menyimpan detail kartu kredit/debit secara penuh).</li>
+                    <li><strong>Aktivitas Belajar:</strong> Progres kursus, nilai kuis, dan sertifikat yang diperoleh.</li>
+                </ul>
+            </section>
+
+            <!-- Section 2 -->
+            <section>
+                <h3 class="text-lg font-bold text-gray-900 mb-2">2. Penggunaan Informasi</h3>
+                <p>Data Anda digunakan untuk tujuan berikut:</p>
+                <ul class="list-disc pl-5 space-y-1">
+                    <li>Memberikan akses ke materi kursus yang telah Anda beli.</li>
+                    <li>Mencetak nama Anda pada sertifikat kelulusan.</li>
+                    <li>Menghubungi Anda terkait pembaruan kursus atau info teknis.</li>
+                    <li>Meningkatkan kualitas layanan platform kami.</li>
+                </ul>
+            </section>
+
+            <!-- Section 3 -->
+            <section>
+                <h3 class="text-lg font-bold text-gray-900 mb-2">3. Perlindungan Data</h3>
+                <p>
+                    Kami menerapkan langkah-langkah keamanan teknis untuk melindungi data Anda dari akses yang tidak sah. Password Anda disimpan dalam bentuk terenkripsi (hashed) dan tidak dapat dibaca oleh staf kami sekalipun.
+                </p>
+            </section>
+
+            <!-- Section 4 -->
+            <section>
+                <h3 class="text-lg font-bold text-gray-900 mb-2">4. Pihak Ketiga</h3>
+                <p>
+                    <strong>Kami tidak akan pernah menjual data pribadi Anda</strong> kepada pihak ketiga manapun untuk tujuan pemasaran. Kami hanya membagikan data jika diwajibkan oleh hukum yang berlaku di Indonesia.
+                </p>
+            </section>
+
+            <!-- Section 5 -->
+            <section>
+                <h3 class="text-lg font-bold text-gray-900 mb-2">5. Cookies</h3>
+                <p>
+                    Website kami menggunakan cookies untuk menyimpan sesi login Anda agar Anda tidak perlu login berulang kali setiap membuka halaman baru. Anda dapat mengatur browser untuk menolak cookies, namun beberapa fitur mungkin tidak berjalan optimal.
+                </p>
+            </section>
+
+             <!-- Footer Note -->
+             <div class="border-t border-gray-100 pt-8 mt-8">
+                <p class="text-sm text-gray-500">
+                    Kebijakan ini dapat berubah sewaktu-waktu. Perubahan signifikan akan kami informasikan melalui email. Hubungi <a href="mailto:privacy@tutordigital.id" class="text-blue-600 hover:underline">privacy@tutordigital.id</a> jika ada pertanyaan.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
