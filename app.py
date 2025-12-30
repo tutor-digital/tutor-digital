@@ -9,6 +9,8 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 from sqlalchemy import func
 import psycopg2
+import cloudinary
+import cloudinary.uploader
 
 # --- KONFIGURASI APP ---
 app = Flask(__name__)
@@ -24,6 +26,12 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 UPLOAD_FOLDER = 'static/uploads'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+
+cloudinary.config(
+    cloud_name = os.getenv('CLOUDINARY_CLOUD_NAME', dayrdc0e7),
+    api_key = os.getenv('CLOUDINARY_API_KEY', '666881136682946'),
+    api_secret = os.getenv('CLOUDINARY_API_SECRET', 'CXX8AQcmKQ5m-MxMxxeTNAT9IDU')
+)
 
 # 1. Inisialisasi Database
 db = SQLAlchemy(app)
@@ -162,38 +170,64 @@ def profile():
     if request.method == 'POST':
         action = request.form.get('action')
         
+        # --- LOGIKA UPDATE DATA PROFIL ---
         if action == 'update_profile':
             current_user.username = request.form.get('name')
             current_user.email = request.form.get('email')
             current_user.school = request.form.get('school')
             current_user.phone = request.form.get('phone')
             
-            # --- LOGIKA BARU: UPLOAD FOTO PROFIL ---
+            # === [PERBAIKAN] LOGIKA UPLOAD CLOUDINARY ===
             if 'profile_image' in request.files:
                 file = request.files['profile_image']
+                
+                # Cek jika user benar-benar memilih file
                 if file and file.filename != '':
-                    filename = secure_filename(file.filename)
-                    # Beri nama unik: id_user_waktu.jpg
-                    import time
-                    unique_filename = f"user_{current_user.id}_{int(time.time())}_{filename}"
-                    
-                    # Simpan file
-                    file.save(os.path.join(app.config['UPLOAD_FOLDER'], unique_filename))
-                    
-                    # Simpan nama file ke database
-                    current_user.profile_image = unique_filename
-            # ---------------------------------------
+                    try:
+                        # 1. Upload langsung ke Cloudinary
+                        print("Mencoba upload ke Cloudinary...")
+                        upload_result = cloudinary.uploader.upload(file)
+                        
+                        # 2. Ambil URL aman (https) dari hasil upload
+                        image_url = upload_result['secure_url']
+                        
+                        # 3. Simpan URL ke database
+                        current_user.profile_image = image_url
+                        print(f"Upload berhasil: {image_url}")
+                        
+                    except Exception as e:
+                        print(f"Error Upload Cloudinary: {e}")
+                        flash('Gagal mengupload gambar. Pastikan koneksi internet stabil.', 'error')
+                        # Kita tidak return redirect di sini agar data teks (nama, email) tetap tersimpan
+            # ============================================
 
             try:
                 db.session.commit()
                 flash('Profil berhasil diperbarui.', 'success')
-            except:
+            except Exception as e:
                 db.session.rollback()
-                flash('Terjadi kesalahan atau email sudah digunakan.', 'error')
+                print(f"Database Error: {e}")
+                flash('Terjadi kesalahan atau email sudah digunakan oleh pengguna lain.', 'error')
 
-        # ... (kode bagian change_password tetap sama) ...
-        
+        # --- LOGIKA GANTI PASSWORD ---
+        elif action == 'change_password':
+            current_pass = request.form.get('currentPassword')
+            new_pass = request.form.get('newPassword')
+            confirm_pass = request.form.get('confirmPassword')
+            
+            if not check_password_hash(current_user.password, current_pass):
+                flash('Password lama salah.', 'error')
+            elif new_pass != confirm_pass:
+                flash('Konfirmasi password tidak cocok.', 'error')
+            elif len(new_pass) < 6:
+                flash('Password minimal 6 karakter.', 'error')
+            else:
+                current_user.password = generate_password_hash(new_pass)
+                db.session.commit()
+                flash('Password berhasil diubah.', 'success')
+                
         return redirect(url_for('profile'))
+        
     return render_template('profile.html')
 
 # --- ROUTES: PUBLIC ---
@@ -359,12 +393,15 @@ def admin_panel():
 @app.route('/admin/edit-course/<int:course_id>', methods=['GET', 'POST'])
 @login_required
 def save_course(course_id=None):
-    if not current_user.is_admin: return redirect(url_for('home'))
+    # Pastikan hanya admin yang bisa akses
+    if not current_user.is_admin: 
+        return redirect(url_for('home'))
 
+    # Ambil data kursus jika mode edit
     course = Course.query.get_or_404(course_id) if course_id else None
 
     if request.method == 'POST':
-        # 1. Ambil Data Teks
+        # 1. AMBIL DATA TEKS UTAMA
         title = request.form.get('title')
         category = request.form.get('category')
         duration = request.form.get('duration')
@@ -374,32 +411,54 @@ def save_course(course_id=None):
         discount = int(request.form.get('discount', 0))
         instructor = request.form.get('instructor')
         
-        # 2. LOGIKA UPLOAD GAMBAR (Baru)
-        image_filename = course.image if course else 'https://via.placeholder.com/600x400?text=No+Image' # Default
+        # 2. LOGIKA GAMBAR (DIPERBAIKI UNTUK CLOUDINARY)
+        # Default: Gunakan gambar lama (jika edit) atau placeholder (jika baru)
+        image_url = course.image if course else 'https://via.placeholder.com/600x400?text=No+Image'
         
-        # Cek apakah ada file yang diupload
+        # Cek jika ada file baru diupload
         if 'image_file' in request.files:
             file = request.files['image_file']
             if file and file.filename != '':
-                filename = secure_filename(file.filename)
-                # Tambahkan timestamp agar nama unik
-                unique_filename = f"{int(time.time())}_{filename}"
-                file.save(os.path.join(app.config['UPLOAD_FOLDER'], unique_filename))
-                image_filename = unique_filename
+                try:
+                    # [FIX] Upload langsung ke Cloudinary (Serverless Friendly)
+                    print("Mengupload gambar kursus ke Cloudinary...")
+                    upload_result = cloudinary.uploader.upload(file)
+                    
+                    # Ambil URL aman (https)
+                    image_url = upload_result['secure_url']
+                    print(f"Upload sukses: {image_url}")
+                    
+                except Exception as e:
+                    print(f"Error Upload ke Cloudinary: {e}")
+                    # Jika gagal upload, kita tidak hentikan proses,
+                    # tapi tetap pakai image_url lama/default.
+                    flash('Gagal mengupload gambar, menggunakan gambar sebelumnya.', 'error')
         
-        # Jika user memasukkan URL manual (opsional fallback)
+        # Fallback: Jika user input URL manual (jarang dipakai jika sudah ada upload)
         elif request.form.get('image'): 
-            image_filename = request.form.get('image')
+            image_url = request.form.get('image')
 
-        # 3. Simpan / Update Course
+        # 3. SIMPAN KE DATABASE
         if not course:
-            course = Course(title=title, category=category, image=image_filename, duration=duration, level=level, description=description, price=price, discount=discount, instructor=instructor)
+            # Buat Kursus Baru
+            course = Course(
+                title=title, 
+                category=category, 
+                image=image_url,  # Simpan URL Cloudinary
+                duration=duration, 
+                level=level, 
+                description=description, 
+                price=price, 
+                discount=discount, 
+                instructor=instructor
+            )
             db.session.add(course)
-            db.session.flush() # Flush untuk mendapatkan ID course
+            db.session.flush() # Flush untuk mendapatkan ID course baru
         else:
+            # Update Kursus Lama
             course.title = title
             course.category = category
-            course.image = image_filename # Update gambar
+            course.image = image_url # Update URL Cloudinary
             course.duration = duration
             course.level = level
             course.description = description
@@ -407,29 +466,34 @@ def save_course(course_id=None):
             course.discount = discount
             course.instructor = instructor
             
-            # Hapus lesson lama untuk diganti yang baru (cara paling sederhana)
+            # Hapus lesson lama untuk diganti yang baru (strategi replace all)
             Lesson.query.filter_by(course_id=course.id).delete()
 
-        # 4. Simpan Lessons
-        lessons_data = json.loads(request.form.get('lessons_json', '[]'))
-        for l in lessons_data:
-            content_data = l.get('content', '')
-            # Pastikan Dict/List diubah jadi JSON String sebelum masuk DB
-            if isinstance(content_data, (dict, list)):
-                content_data = json.dumps(content_data)
+        # 4. SIMPAN LESSONS (Materi Pelajaran)
+        try:
+            lessons_data = json.loads(request.form.get('lessons_json', '[]'))
+            for l in lessons_data:
+                content_data = l.get('content', '')
                 
-            new_lesson = Lesson(
-                course_id=course.id, 
-                title=l['title'], 
-                duration=l['duration'], 
-                type=l['type'], 
-                is_preview=l['isPreview'],
-                content=content_data
-            )
-            db.session.add(new_lesson)
+                # Pastikan Dict/List (seperti Quiz atau Video+Teks) diubah jadi JSON String
+                if isinstance(content_data, (dict, list)):
+                    content_data = json.dumps(content_data)
+                    
+                new_lesson = Lesson(
+                    course_id=course.id, 
+                    title=l['title'], 
+                    duration=l['duration'], 
+                    type=l['type'], 
+                    is_preview=l['isPreview'],
+                    content=content_data
+                )
+                db.session.add(new_lesson)
+        except Exception as e:
+            print(f"Error saving lessons: {e}")
+            flash('Terjadi kesalahan saat menyimpan materi pelajaran.', 'error')
 
         db.session.commit()
-        flash('Kursus berhasil disimpan.', 'success')
+        flash('Kursus berhasil disimpan!', 'success')
         return redirect(url_for('admin_panel'))
 
     # --- Persiapan Data untuk GET (Edit Mode) ---
@@ -437,6 +501,7 @@ def save_course(course_id=None):
     if course:
         for l in course.lessons:
             # Load kembali konten JSON jika tipe quiz atau video_text
+            # Agar JavaScript di frontend bisa membacanya sebagai Object, bukan String
             content_val = l.content
             if l.type in ['quiz', 'video_text'] and l.content:
                 try:

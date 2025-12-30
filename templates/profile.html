@@ -18,9 +18,9 @@
                     <div class="relative group">
                         <div class="w-32 h-32 rounded-full overflow-hidden border-4 border-white shadow-lg bg-white flex items-center justify-center relative">
                             
-                            <!-- 1. Tampilkan Gambar Jika Ada -->
+                            <!-- 1. Tampilkan Gambar Jika Ada (Logic Cloudinary/Lokal) -->
                             <img id="avatarPreview" 
-                                 src="{{ url_for('static', filename='uploads/' + current_user.profile_image) if current_user.profile_image else '#' }}" 
+                                 src="{{ (current_user.profile_image if 'http' in current_user.profile_image else url_for('static', filename='uploads/' + current_user.profile_image)) if current_user.profile_image else '#' }}" 
                                  class="w-full h-full object-cover {{ 'hidden' if not current_user.profile_image else '' }}" 
                                  alt="Avatar">
                             
@@ -36,10 +36,10 @@
                         </div>
 
                         <!-- 3. TOMBOL UPLOAD (INPUT FILE) -->
-                        <!-- Perhatikan atribut form="profileForm". Ini menghubungkan input ini ke form di bawah -->
                         <label for="avatarInput" class="absolute bottom-0 right-0 bg-white text-blue-600 p-2 rounded-full cursor-pointer hover:bg-gray-100 transition-colors shadow-lg border border-gray-200 z-10">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
                             
+                            <!-- form="profileForm" menghubungkan input ini dengan form di bawah -->
                             <input type="file" 
                                    id="avatarInput" 
                                    name="profile_image" 
@@ -76,8 +76,9 @@
 
             <!-- Content Area -->
             <div class="p-8">
+                
                 <!-- TAB 1: PROFILE FORM -->
-                <!-- PENTING: Tambahkan ID="profileForm" dan enctype -->
+                <!-- Enctype Multipart untuk upload file -->
                 <div id="content-profile">
                     <form method="POST" id="profileForm" enctype="multipart/form-data" class="space-y-6">
                         <input type="hidden" name="action" value="update_profile">
@@ -101,7 +102,7 @@
                             </div>
                         </div>
 
-                        <div class="flex justify-end">
+                        <div class="flex justify-end pt-4">
                             <button type="submit" class="bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2 font-bold shadow-lg">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"/></svg>
                                 Simpan Perubahan
@@ -141,7 +142,7 @@
 </div>
 
 <script>
-    // 1. Logic Switch Tab
+    // Logic Switch Tab
     function switchTab(tabName) {
         document.getElementById('content-profile').classList.add('hidden');
         document.getElementById('content-password').classList.add('hidden');
@@ -159,13 +160,12 @@
         activeBtn.classList.add('border-blue-600', 'text-blue-600');
     }
 
-    // 2. Logic Preview Avatar
+    // Logic Preview Avatar
     function previewAvatar(event) {
         const file = event.target.files[0];
         if (file) {
             const reader = new FileReader();
             reader.onload = function(e) {
-                // Sembunyikan inisial, tampilkan gambar
                 document.getElementById('avatarInitial').classList.add('hidden');
                 const img = document.getElementById('avatarPreview');
                 img.src = e.target.result;

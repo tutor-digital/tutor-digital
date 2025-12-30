@@ -13,7 +13,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <!-- Font Inter untuk Teks Body -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Font Outfit untuk Logo & Heading (Kesan Modern) -->
+    <!-- Font Outfit untuk Logo & Heading -->
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
     
     <style>
@@ -58,7 +58,7 @@
                         <!-- Teks Logo -->
                         <div class="flex flex-col justify-center">
                             <span class="font-brand font-bold text-xl leading-none text-gray-900 tracking-tight">Tutor<span class="text-blue-600">Digital</span></span>
-                            <!-- Tagline Baru -->
+                            <!-- Tagline -->
                             <span class="text-[10px] font-bold text-gray-400 tracking-widest uppercase mt-0.5">Platform Belajar Digital</span>
                         </div>
                     </a>
@@ -90,7 +90,7 @@
                 <div class="flex items-center gap-4">
                     {% if current_user.is_authenticated %}
                         
-                        <!-- ICON KERANJANG (DIPERBAIKI: Muncul untuk Admin & Siswa) -->
+                        <!-- ICON KERANJANG -->
                         <a href="{{ url_for('cart') }}" class="text-gray-500 hover:text-blue-600 relative p-2 transition-colors group" title="Keranjang Belanja">
                             <svg class="w-6 h-6 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
                             {% if session.get('cart') %}
@@ -108,9 +108,9 @@
                                     <p class="text-xs text-blue-600 font-medium leading-none mt-1">{{ 'Administrator' if current_user.is_admin else 'Siswa' }}</p>
                                 </div>
                                 
-                                <!-- LOGIKA AVATAR: Foto vs Inisial -->
+                                <!-- LOGIKA AVATAR NAVBAR -->
                                 {% if current_user.profile_image %}
-                                    <img src="{{ url_for('static', filename='uploads/' + current_user.profile_image) }}" 
+                                    <img src="{{ current_user.profile_image if 'http' in current_user.profile_image else url_for('static', filename='uploads/' + current_user.profile_image) }}" 
                                          alt="Profile" 
                                          class="w-10 h-10 rounded-full object-cover shadow-md ring-2 ring-white border border-gray-100">
                                 {% else %}
@@ -120,7 +120,7 @@
                                 {% endif %}
                             </button>
                             
-                            <!-- Dropdown Menu Content -->
+                            <!-- Dropdown Content -->
                             <div class="absolute right-0 mt-2 w-60 bg-white rounded-xl shadow-xl py-2 hidden group-hover:block border border-gray-100 transform transition-all duration-200 origin-top-right">
                                 <div class="px-4 py-3 border-b border-gray-100 bg-gray-50/50">
                                     <p class="text-xs text-gray-500 uppercase font-bold tracking-wider">Akun</p>
@@ -129,7 +129,6 @@
 
                                 <div class="py-1">
                                     {% if current_user.is_admin %}
-                                        <!-- ADMIN LINKS -->
                                         <a href="{{ url_for('admin_panel') }}" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors">
                                             <svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 002 2h2a2 2 0 002-2z"/></svg>
                                             Dashboard Admin
@@ -139,7 +138,6 @@
                                             Kelola Kursus
                                         </a>
                                     {% else %}
-                                        <!-- SISWA LINKS -->
                                         <a href="{{ url_for('my_courses') }}" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors">
                                             <svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"/></svg>
                                             Kursus Saya
@@ -261,7 +259,6 @@
 
     <!-- Global Scripts -->
     <script>
-        // Auto-hide flash messages after 5 seconds
         document.addEventListener('DOMContentLoaded', function() {
             const alerts = document.querySelectorAll('.alert-message');
             if (alerts.length > 0) {
